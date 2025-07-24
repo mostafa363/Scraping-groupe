@@ -9,26 +9,22 @@ from typing import Optional
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
-# Import the database connection and helper function from our database.py
+# Import the database connection and the now-updated helper function
 from .database import collection, movie_helper
 
 # Initialize the FastAPI app
 app = FastAPI(
     title="Movie Scraper API",
-    description="An API to access movie data collected from IMDb."
+    description="An API to access enriched movie data from IMDb and Rotten Tomatoes."
 )
 
 # =====================================================================
-# API ENDPOINTS TO GET MOVIES
+# API ENDPOINTS TO GET MOVIES (Largely unchanged, rely on the helper)
 # =====================================================================
 @app.get("/movies", summary="Get a list of all movies")
 async def get_movies(skip: int = 0, limit: int = 25):
-    """
-    Retrieve a paginated list of movies from the database.
-    - **skip**: Number of records to skip for pagination.
-    - **limit**: Maximum number of records to return.
-    """
     movies = []
+    # No changes needed here, as the logic relies on the updated movie_helper
     async for movie in collection.find().skip(skip).limit(limit):
         movies.append(movie_helper(movie))
     return movies
@@ -36,12 +32,9 @@ async def get_movies(skip: int = 0, limit: int = 25):
 
 @app.get("/movies/search", summary="Search for movies by title")
 async def search_movies(title: str):
-    """
-    Search for movies that contain the given text in their title.
-    The search is case-insensitive.
-    """
     movies = []
     query = {"title": {"$regex": title, "$options": "i"}}
+    # No changes needed here either
     async for movie in collection.find(query):
         movies.append(movie_helper(movie))
     if not movies:
@@ -49,23 +42,26 @@ async def search_movies(title: str):
     return movies
 
 
+# =====================================================================
+# UPDATED FILTER ENDPOINT
+# =====================================================================
 @app.get("/movies/filter", summary="Filter and sort movies with detailed criteria")
 async def filter_movies(
     genre: Optional[str] = None,
-    min_rating: Optional[float] = Query(None, ge=0, le=10),
+    # UPDATED: The query parameter is still 'min_rating' for user convenience,
+    # but the logic now queries the 'imdb_rating' field.
+    min_rating: Optional[float] = Query(None, ge=0, le=10, description="Filter by minimum IMDb rating"),
     min_year: Optional[int] = Query(None, ge=1800),
-    sort_by: Optional[str] = Query(None, enum=["rating", "year", "runtime_minutes"]),
+    # UPDATED: The enum now reflects the new data structure.
+    sort_by: Optional[str] = Query(None, enum=["imdb_rating", "tomatometer_score", "year", "runtime_minutes"]),
     order: str = Query("desc", enum=["asc", "desc"])
 ):
-    """
-    Find movies by filtering on genre, minimum rating, and minimum year.
-    You can also sort the results by rating, year, or runtime.
-    """
     query = {}
     if genre:
         query["genres"] = {"$regex": genre, "$options": "i"}
     if min_rating is not None:
-        query["rating"] = {"$gte": min_rating}
+        # THE FIX IS HERE: Query the correct 'imdb_rating' field in the database.
+        query["imdb_rating"] = {"$gte": min_rating}
     if min_year is not None:
         query["year"] = {"$gte": min_year}
 
@@ -76,8 +72,8 @@ async def filter_movies(
     if sort_by:
         sort_criteria.append((sort_by, sort_direction))
     else:
-        # Default sort by rating if no other sort is specified
-        sort_criteria.append(("rating", -1))
+        # THE FIX IS HERE: Default sort should also use 'imdb_rating'.
+        sort_criteria.append(("imdb_rating", -1))
 
     cursor = collection.find(query)
     if sort_criteria:
@@ -93,19 +89,20 @@ async def filter_movies(
 
 
 # =====================================================================
-# API ENDPOINT FOR CSV EXPORT
+# UPDATED CSV EXPORT ENDPOINT
 # =====================================================================
 @app.get("/export/csv", summary="Export all movie data to a CSV file")
 async def export_to_csv():
-    """
-    Fetches all movie data from the database and returns it as a
-    downloadable CSV file, using a semicolon delimiter for Excel compatibility.
-    """
     stream = io.StringIO()
     writer = csv.writer(stream, delimiter=';')
 
-    # UPDATED headers to use the new runtime_minutes field
-    headers = ["id", "title", "year", "rating", "director", "poster_url", "plot_summary", "genres", "runtime_minutes", "cast", "source_url"]
+    # THE FIX IS HERE: Update headers to match the new data structure.
+    headers = [
+        "id", "title", "year", 
+        "imdb_rating", "tomatometer_score", "audience_score", 
+        "director", "plot_summary", "genres", "runtime_minutes", "cast", 
+        "source_imdb_url", "rotten_tomatoes_url"
+    ]
     writer.writerow(headers)
 
     movies_cursor = collection.find()
@@ -113,18 +110,21 @@ async def export_to_csv():
         genres_str = ", ".join(movie.get("genres", []))
         cast_str = " | ".join([c.get("actor", "") for c in movie.get("cast", [])])
 
+        # THE FIX IS HERE: Write the row with the correct new fields.
         writer.writerow([
             str(movie["_id"]),
             movie.get("title"),
             movie.get("year"),
-            movie.get("rating"),
+            movie.get("imdb_rating"),
+            movie.get("tomatometer_score"),
+            movie.get("audience_score"),
             movie.get("director"),
-            movie.get("poster_url"),
             movie.get("plot_summary"),
             genres_str,
-            movie.get("runtime_minutes"), # UPDATED to use the clean field
+            movie.get("runtime_minutes"),
             cast_str,
-            movie.get("source_url"),
+            movie.get("source_imdb_url"),
+            movie.get("rotten_tomatoes_url"),
         ])
     
     stream.seek(0)
@@ -137,13 +137,9 @@ async def export_to_csv():
 
 
 # =====================================================================
-# API ENDPOINT TO TRIGGER THE SCRAPER
+# SCRAPER ENDPOINT (No changes needed here)
 # =====================================================================
 def run_scraper_script():
-    """
-    Function that will be run in the background.
-    It executes the scraper/scraper.py script using the same Python environment.
-    """
     print("--- Background Task: Starting scraper script ---")
     try:
         subprocess.run([sys.executable, "scraper/scraper.py"], check=True)
@@ -156,9 +152,5 @@ def run_scraper_script():
 
 @app.post("/scraper/run", status_code=202, summary="Start a new scraping process")
 async def run_scraper(background_tasks: BackgroundTasks):
-    """
-    Triggers the scraper script to run as a background process.
-    The API will return a confirmation message immediately.
-    """
     background_tasks.add_task(run_scraper_script)
     return {"message": "Scraping process started in the background. It will take several minutes to complete."}

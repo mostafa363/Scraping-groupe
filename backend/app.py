@@ -10,7 +10,7 @@ from fastapi import FastAPI, BackgroundTasks, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
 # Import the database connection and helper function from our database.py
-from .database import collection, movie_helper
+from database import collection, movie_helper
 
 # Initialize the FastAPI app
 app = FastAPI(

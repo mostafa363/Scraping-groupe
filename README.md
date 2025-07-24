@@ -18,6 +18,9 @@
  
  pip install motor
 
+# cd frontend
+ npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
+
 # create virtual env : python -m venv venv
 
 # activate the venv : .\venv\Scripts\activate

@@ -2,36 +2,35 @@
 
 import os
 from dotenv import load_dotenv
-import motor.motor_asyncio # The async driver for MongoDB
-from bson import ObjectId # To handle MongoDB's unique IDs
+import motor.motor_asyncio
+from bson import ObjectId
 
-# Load environment variables from the .env file in the project root
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 
-# --- Database Connection ---
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
-# The database name is part of your MONGO_URI, e.g., 'metflix_db'
-# Motor gets it automatically from the URI. If not, you can specify it:
-# db = client.metflix_db
 db = client.get_default_database() 
 collection = db.movies
 
-
-# --- Helper Functions ---
-
-# Helper to convert a movie document from DB to a Python dict
+# =====================================================================
+# UPDATED, MORE ROBUST HELPER FUNCTION
+# =====================================================================
 def movie_helper(movie) -> dict:
+    """
+    Converts a movie document from the DB to a Python dict.
+    Uses .get() to prevent errors if a field is missing.
+    """
     return {
-        "id": str(movie["_id"]), # Convert ObjectId to string
-        "title": movie["title"],
-        "year": movie["year"],
-        "rating": movie["rating"],
-        "director": movie["director"],
-        "poster_url": movie["poster_url"],
-        "plot_summary": movie["plot_summary"],
-        "genres": movie["genres"],
-        "runtime": movie["runtime"],
-        "cast": movie["cast"],
-        "source_url": movie["source_url"],
+        "id": str(movie["_id"]),
+        "title": movie.get("title"),
+        "year": movie.get("year"),
+        "rating": movie.get("rating"),
+        "director": movie.get("director"),
+        "poster_url": movie.get("poster_url"),
+        "plot_summary": movie.get("plot_summary"),
+        "genres": movie.get("genres", []), # Default to empty list
+        # THE FIX IS HERE: Look for the new 'runtime_minutes' field
+        "runtime_minutes": movie.get("runtime_minutes"),
+        "cast": movie.get("cast", []), # Default to empty list
+        "source_url": movie.get("source_url"),
     }

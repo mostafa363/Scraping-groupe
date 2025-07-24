@@ -1,0 +1,22 @@
+body {
+  background: #f5f6fa;
+  margin: 0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.MuiCard-root {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 12px;
+}
+
+.MuiTypography-h3 {
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .MuiCardMedia-root {
+    height: 200px !important;
+  }
+}

@@ -12,10 +12,20 @@ from fastapi.responses import StreamingResponse
 # Import the database connection and the now-updated helper function
 from .database import collection, movie_helper
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Initialize the FastAPI app
 app = FastAPI(
     title="Movie Scraper API",
     description="An API to access enriched movie data from IMDb and Rotten Tomatoes."
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # =====================================================================

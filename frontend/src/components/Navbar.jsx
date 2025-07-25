@@ -106,56 +106,22 @@ function Navbar({ filters, setFilters, movies }) {
           
           {/* Section des Filtres */}
           <Grid item xs>
-            <Grid container spacing={2} alignItems="center" justifyContent="flex-end">
-              <Grid item xs={12} sm={4} md={3}>
+            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Box sx={{ flexGrow: 1, maxWidth: 500 }}>
                 <TextField fullWidth name="title" value={localFilters.title} onChange={handleLocalChange} label="Search by Title" variant="outlined" size="small" />
-              </Grid>
-              
-              <Grid item xs={6} sm={2} md="auto">
-                <TextField fullWidth name="min_year" value={localFilters.min_year} onChange={handleLocalChange} label="Min Year" type="number" size="small" />
-              </Grid>
-
-              <Grid item xs={6} sm={2} md="auto">
-                <TextField fullWidth name="min_rating" value={localFilters.min_rating} onChange={handleLocalChange} label="Min IMDb" type="number" size="small" />
-              </Grid>
-
-              <Grid item xs={12} sm={4} md={2.5}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Sort By</InputLabel>
-                  <Select name="sort_by" value={filters.sort_by || 'imdb_rating'} onChange={handleSelectChange} label="Sort By">
-                    {sortOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item xs={12} sm={2} md="auto">
-                <FormControl fullWidth size="small">
-                  <InputLabel>Order</InputLabel>
-                  <Select name="order" value={filters.order || 'desc'} onChange={handleSelectChange} label="Order">
-                    <MenuItem value="desc">Desc</MenuItem>
-                    <MenuItem value="asc">Asc</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              {/* --- STEP 3: ADD THE EXPORT BUTTON --- */}
-              {/* Placed as the last item in the filters section for a clean layout. */}
-              <Grid item xs={12} sm="auto">
+              </Box>
+              <Box sx={{ flexShrink: 0, ml: 2 }}>
                 <Button
                   variant="outlined"
                   startIcon={<DownloadIcon />}
                   onClick={handleExportCSV}
-                  // It's good practice to disable the button if there are no movies
                   disabled={!movies || movies.length === 0}
                   sx={{ whiteSpace: 'nowrap' }}
                 >
                   Export CSV
                 </Button>
-              </Grid>
-
-            </Grid>
+              </Box>
+            </Box>
           </Grid>
         </Grid>
       </Toolbar>

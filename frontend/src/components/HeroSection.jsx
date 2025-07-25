@@ -132,25 +132,7 @@ function HeroSection({ movie, onClick }) {
             gap: 1,
           }}
         >
-          <Tooltip title={isMuted ? "Unmute" : "Mute"}>
-            <IconButton
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMuted(!isMuted);
-              }}
-              sx={{
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                color: '#F8F9FA',
-                backdropFilter: 'blur(10px)',
-                '&:hover': {
-                  backgroundColor: 'rgba(245, 200, 66, 0.8)',
-                  color: '#0D1117',
-                },
-              }}
-            >
-              {isMuted ? <VolumeOff /> : <VolumeUp />}
-            </IconButton>
-          </Tooltip>
+          
         </Box>
  
         {/* Main Content */}
@@ -326,79 +308,12 @@ function HeroSection({ movie, onClick }) {
                   }
                 }}
               >
-                Watch Details
+                More Details
               </Button>
  
-              {/* More Info Button */}
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClick();
-                }}
-                variant="outlined"
-                size="large"
-                startIcon={<Info />}
-                sx={{
-                  color: '#F8F9FA',
-                  borderColor: 'rgba(248, 249, 250, 0.5)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  backdropFilter: 'blur(10px)',
-                  fontWeight: 'bold',
-                  fontSize: '1.1rem',
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 3,
-                  textTransform: 'none',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: 'rgba(248, 249, 250, 0.1)',
-                    borderColor: '#F8F9FA',
-                    transform: 'translateY(-2px)',
-                  }
-                }}
-              >
-                More Info
-              </Button>
+             
  
-              {/* Add to List Button */}
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Add to watchlist logic
-                }}
-                sx={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  color: '#F8F9FA',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(248, 249, 250, 0.3)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(248, 249, 250, 0.1)',
-                    transform: 'scale(1.1)',
-                  },
-                }}
-              >
-                <Add />
-              </IconButton>
- 
-              {/* Like Button */}
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Like logic
-                }}
-                sx={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  color: '#F8F9FA',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(248, 249, 250, 0.3)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(196, 30, 58, 0.8)',
-                    transform: 'scale(1.1)',
-                  },
-                }}
-              >
-                <ThumbUp />
-              </IconButton>
+             
             </Box>
           </Fade>
         </Box>

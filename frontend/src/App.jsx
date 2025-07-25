@@ -1,7 +1,14 @@
 // src/App.jsx
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Container, Typography, Grid, CircularProgress, Button } from '@mui/material';
+import { Box, Container, Typography, Grid, CircularProgress, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+const sortOptions = [
+  { value: 'imdb_rating', label: 'IMDb Rating' },
+  { value: 'tomatometer_score', label: 'Tomatometer' },
+  { value: 'year', label: 'Release Year' },
+  { value: 'runtime_minutes', label: 'Runtime' },
+  { value: 'discrepancy', label: 'Rating Discrepancy' },
+];
 import { getMovies, searchMovies } from './services/api';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
@@ -94,10 +101,53 @@ function App() {
           {!loading && allMovies.length > 0 && <Charts movies={allMovies} />}
            
 
-          {/* Title for the movie grid section */}
-          <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', mt: 4 }}>
-            Movies
-          </Typography>
+          {/* Sort and order controls above the movie grid */}
+          <Box sx={{ height: 32 }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, mt: 2, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+              <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+                Movies
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel>Sort By</InputLabel>
+                <Select
+                  name="sort_by"
+                  value={filters.sort_by || 'imdb_rating'}
+                  onChange={e => setFilters(prev => ({ ...prev, sort_by: e.target.value }))}
+                  label="Sort By"
+                >
+                  {sortOptions.map(option => (
+                    <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl size="small" sx={{ minWidth: 100 }}>
+                <InputLabel>Order</InputLabel>
+                <Select
+                  name="order"
+                  value={filters.order || 'desc'}
+                  onChange={e => setFilters(prev => ({ ...prev, order: e.target.value }))}
+                  label="Order"
+                >
+                  <MenuItem value="desc">Desc</MenuItem>
+                  <MenuItem value="asc">Asc</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <InputLabel shrink>Min Year</InputLabel>
+                <input
+                  type="number"
+                  name="min_year"
+                  value={filters.min_year || ''}
+                  onChange={e => setFilters(prev => ({ ...prev, min_year: e.target.value }))}
+                  placeholder="Min Year"
+                  style={{ padding: '8.5px 14px', borderRadius: 4, border: '1px solid #ccc', fontSize: 16, width: '100%' }}
+                />
+              </FormControl>
+            </Box>
+          </Box>
 
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 10 }}><CircularProgress /></Box>

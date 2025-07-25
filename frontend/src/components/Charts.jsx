@@ -66,7 +66,7 @@ function Charts({ movies }) {
             <Grid item xs={12}>
                 <Typography variant="h6" gutterBottom align="center">IMDb Rating Distribution</Typography>
                 {/* --- INCREASED HEIGHT AND ADDED MIN-HEIGHT TO PARENT --- */}
-                <Box sx={{ width: 700, height: 500 }}>
+                <Box sx={{ width: 600, height: 500 }}>
                     <ResponsiveContainer width="100%" height="100%">
                         
                         <BarChart data={histogramData}>
@@ -84,9 +84,9 @@ function Charts({ movies }) {
             <Grid item xs={12}>
               <Typography variant="h6" gutterBottom align="center">IMDb Rating vs. Tomatometer Score</Typography>
               {/* --- INCREASED HEIGHT AND ADDED MIN-HEIGHT TO PARENT --- */}
-               <Box sx={{ width: 800, height: 500 }}>
+               <Box sx={{ width: 600, height: 500 }}>
                     <ResponsiveContainer width="110%" height="110%">
-                        <ScatterChart margin={{ top: 0, right: 0, bottom: 22, left: 170 }}>
+                        <ScatterChart margin={{ top: 0, right: 0, bottom: 22, left: 100 }}>
                           <CartesianGrid />
                           <XAxis type="number" dataKey="imdb" name="IMDb Rating" unit="" domain={[7, 10]} />
                           <YAxis type="number" dataKey="rt" name="Tomatometer" unit="%" domain={[50, 100]} />

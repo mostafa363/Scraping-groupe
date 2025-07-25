@@ -13,6 +13,8 @@ import SummaryStats from './components/SummaryStats';
 
 const PAGE_SIZE = 24;
 
+const API_BASE = "http://localhost:8000";
+
 function App() {
   const [allMovies, setAllMovies] = useState([]);
   const [visibleMovies, setVisibleMovies] = useState([]);
@@ -76,9 +78,11 @@ function App() {
     }
   };
 
+
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Navbar filters={filters} setFilters={setFilters} />
+      <Navbar filters={filters} setFilters={setFilters} movies={allMovies} />
 
       <Box component="main" sx={{ flexGrow: 1 }}>
         <Container maxWidth={false} sx={{ py: 4, px: 4 }}>

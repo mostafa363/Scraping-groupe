@@ -1,11 +1,11 @@
 // src/components/MovieDetailModal.jsx
-
+ 
 import React from 'react';
 import {
   Modal, Box, Typography, List, ListItem, ListItemText, Chip, Divider, IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
+ 
 // Style for the modal box
 const style = {
   position: 'absolute',
@@ -21,12 +21,12 @@ const style = {
   maxHeight: '90vh',
   overflowY: 'auto'
 };
-
+ 
 function MovieDetailModal({ movie, open, handleClose }) {
   if (!movie) {
     return null;
   }
-
+ 
   return (
     <Modal
       open={open}
@@ -46,21 +46,21 @@ function MovieDetailModal({ movie, open, handleClose }) {
         >
           <CloseIcon />
         </IconButton>
-
+ 
         <Typography id="movie-detail-modal-title" variant="h4" component="h2" gutterBottom>
           {movie.title} ({movie.year})
         </Typography>
-        
+       
         <Typography variant="body1" sx={{ mb: 2 }}>
           {movie.plot_summary}
         </Typography>
-
+ 
         <Divider sx={{ my: 2 }} />
-
+ 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
           {movie.genres.map(genre => <Chip key={genre} label={genre} />)}
         </Box>
-        
+       
         <List dense>
             <ListItem>
                 <ListItemText primary="Director" secondary={movie.director} />
@@ -78,9 +78,9 @@ function MovieDetailModal({ movie, open, handleClose }) {
                 <ListItemText primary="Audience Score" secondary={movie.audience_score ? `${movie.audience_score}%` : 'N/A'} />
             </ListItem>
         </List>
-        
+       
         <Divider sx={{ my: 2 }}>Cast</Divider>
-        
+       
         <List dense>
             {movie.cast.map((member, index) => (
                 <ListItem key={index}>
@@ -92,5 +92,5 @@ function MovieDetailModal({ movie, open, handleClose }) {
     </Modal>
   );
 }
-
+ 
 export default MovieDetailModal;
